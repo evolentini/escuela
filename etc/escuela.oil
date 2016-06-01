@@ -36,6 +36,16 @@ OSEK OSEK {
       RESOURCE = POSIXR;
       EVENT = POSIXE;
    }
+   
+   TASK LedAzul {
+      PRIORITY = 3;
+      ACTIVATION = 1;
+      STACK = 512;
+      SCHEDULE = NON;
+      TYPE = EXTENDED;
+      RESOURCE = POSIXR;
+      EVENT = POSIXE;
+   }
 
    ALARM ActivarPeriodica {
       COUNTER = Contador;

@@ -27,23 +27,37 @@ TASK(Inicializacion)
    ciaak_start();
    leds = ciaaPOSIX_open(SALIDAS, ciaaPOSIX_O_RDWR);
    teclas = ciaaPOSIX_open(ENTRADAS, ciaaPOSIX_O_RDONLY);
-   SetRelAlarm(ActivarPeriodica, 350, 250);
+   SetRelAlarm(ActivarPeriodica, 350, 50);
    TerminateTask();
 }
 
 TASK(Periodica)
 {
+   uint8_t actual;
    uint8_t salidas;
-   uint8_t entradas;
+   static uint8_t entradas;
 
-   ciaaPOSIX_read(teclas, &entradas, 1);
    ciaaPOSIX_read(leds, &salidas, 1);
-   if (~entradas & TECLA_1) {
-      salidas |= LED_RGB_AZUL;
-   } else {
-      salidas &= ~LED_RGB_AZUL;
-   }
+   ciaaPOSIX_read(teclas, &actual, 1);
+   actual = ~actual;
+
    salidas ^= LED_VERDE;
+   if (((actual ^ entradas) & (actual & TECLA_1)))
+   {
+      ActivateTask(LedAzul);
+   } 
+   ciaaPOSIX_write(leds, &salidas, 1);
+
+   entradas = actual;
+   TerminateTask();
+}
+
+TASK(LedAzul)
+{
+   uint8_t salidas;
+
+   ciaaPOSIX_read(leds, &salidas, 1);
+   salidas ^= LED_RGB_AZUL;
    ciaaPOSIX_write(leds, &salidas, 1);
 
    TerminateTask();
