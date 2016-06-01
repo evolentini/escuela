@@ -20,11 +20,13 @@ void ErrorHook(void)
 }
 
 static int32_t leds;
+static int32_t teclas;
 
 TASK(Inicializacion)
 {
    ciaak_start();
    leds = ciaaPOSIX_open(SALIDAS, ciaaPOSIX_O_RDWR);
+   teclas = ciaaPOSIX_open(ENTRADAS, ciaaPOSIX_O_RDONLY);
    SetRelAlarm(ActivarPeriodica, 350, 250);
    TerminateTask();
 }
@@ -32,8 +34,15 @@ TASK(Inicializacion)
 TASK(Periodica)
 {
    uint8_t salidas;
+   uint8_t entradas;
 
+   ciaaPOSIX_read(teclas, &entradas, 1);
    ciaaPOSIX_read(leds, &salidas, 1);
+   if (~entradas & TECLA_1) {
+      salidas |= LED_RGB_AZUL;
+   } else {
+      salidas &= ~LED_RGB_AZUL;
+   }
    salidas ^= LED_VERDE;
    ciaaPOSIX_write(leds, &salidas, 1);
 
