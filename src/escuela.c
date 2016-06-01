@@ -48,6 +48,13 @@ TASK(Periodica)
    } 
    ciaaPOSIX_write(leds, &salidas, 1);
 
+
+   if (((actual ^ entradas) & (actual & TECLA_2)))
+   {
+      ActivateTask(LedAmarillo);
+   }
+   ciaaPOSIX_write(leds, &salidas, 1);
+
    entradas = actual;
    TerminateTask();
 }
@@ -58,6 +65,17 @@ TASK(LedAzul)
 
    ciaaPOSIX_read(leds, &salidas, 1);
    salidas ^= LED_RGB_AZUL;
+   ciaaPOSIX_write(leds, &salidas, 1);
+
+   TerminateTask();
+}
+
+TASK(LedAmarillo)
+{
+   uint8_t salidas;
+
+   ciaaPOSIX_read(leds, &salidas, 1);
+   salidas ^= LED_AMARILLO;
    ciaaPOSIX_write(leds, &salidas, 1);
 
    TerminateTask();
